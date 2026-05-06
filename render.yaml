@@ -26,6 +26,6 @@ services:
 
 databases:
   - name: mkttools-db
-    plan: starter
+    plan: free
     databaseName: mkttools
     user: mkttools

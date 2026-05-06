@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+
+  sessions Session[]
+  accounts Account[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Platform {
+  id          String      @id @default(cuid())
+  name        String
+  url         String
+  iconUrl     String?
+  description String?
+  isActive    Boolean     @default(true)
+  credential  Credential?
+  createdAt   DateTime    @default(now())
+}
+
+model Credential {
+  id          String   @id @default(cuid())
+  platformId  String   @unique
+  platform    Platform @relation(fields: [platformId], references: [id], onDelete: Cascade)
+  username    String
+  password    String
+  loginUrl    String?
+  loginConfig String?
+  createdAt   DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  USER
+}

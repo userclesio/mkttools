@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: mkttools
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: DATABASE_URL
+        fromDatabase:
+          name: mkttools-db
+          property: connectionString
+      - key: NEXTAUTH_URL
+        sync: false   # preencher com a URL do Render após deploy
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+      - key: ENCRYPTION_KEY
+        sync: false   # preencher com chave de 32 caracteres
+      - key: PUPPETEER_EXECUTABLE_PATH
+        value: /usr/bin/chromium
+      - key: PUPPETEER_SKIP_CHROMIUM_DOWNLOAD
+        value: "true"
+
+databases:
+  - name: mkttools-db
+    plan: starter
+    databaseName: mkttools
+    user: mkttools
